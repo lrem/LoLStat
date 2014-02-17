@@ -1,5 +1,8 @@
 *.py[cod]
 
+# Secrets
+*.key
+
 # C extensions
 *.so
 
