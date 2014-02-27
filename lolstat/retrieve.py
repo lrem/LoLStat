@@ -10,8 +10,10 @@ except the `get_id`.
 
 import requests
 import time
+import lolstat.db
 
 REQUEST_SLEEP = 1  # Don't spam requests too often
+UNAUTH_SLEEP = 5 * 60  # Wait longer if rate limit hit
 
 BASE_URL = 'https://prod.api.pvp.net/api/lol/%(region)s/'
 RECENT = BASE_URL + 'v1.3/game/by-summoner/%(summonerId)s/recent'
@@ -36,28 +38,32 @@ def get_recent(region, summoner):
     Retrieve recent games of `summoner`.
     """
     time.sleep(REQUEST_SLEEP)
-    return requests.get(RECENT % {'region': region,
-                                  'summonerId': summoner} + KEY).json()
+    res = requests.get(RECENT % {'region': region,
+                                 'summonerId': summoner} + KEY)
+    if res.status_code == 401:
+        time.sleep(UNAUTH_SLEEP)
+        return get_recent(region, summoner)
+    return res.json()
 
 
-def get_surrounding(region, summoner):
+def get_batch(region, summoners):
     """
-    Retrieve recent games of `summoner` and everyone he played with recently.
+    Retrieve recent games of `summoners`
+    and everyone they played with recently.
     """
-    own = get_recent(region, summoner)
-    surrounding = {summoner: own}
-    for game in own['games']:
-        for fellow in game['fellowPlayers']:
-            fellowID = fellow['summonerId']
-            if fellowID not in surrounding:
-                surrounding[fellowID] = get_recent(region, fellowID)
-    return surrounding
+    ret = {summoner: get_recent(region, summoner) for summoner in summoners}
+    for summoner in summoners:
+        for game in ret[summoner]['games']:
+            if not lolstat.db.game_in_db(game['gameId']):
+                for fellow in game['fellowPlayers']:
+                    fellowID = fellow['summonerId']
+                    if fellowID not in ret:
+                        ret[fellowID] = get_recent(region, fellowID)
+    return ret
 
 
 if __name__ == '__main__':
     KEY += open('api.key').readline().strip()
     NAME = open('name').readline().strip()
     player = get_id('euw', NAME)
-    recent = get_recent('euw', player)
-    surrounding = get_surrounding('euw', player)
-    print(surrounding)
+    batch = get_batch('euw', [player])
