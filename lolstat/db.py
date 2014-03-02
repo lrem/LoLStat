@@ -101,3 +101,11 @@ def game_in_db(gameId):
     """
     cur = DBH.execute('select count(*) from game where gameId=?', [gameId])
     return bool(cur.fetchone()[0])
+
+
+def get_observed_summoners():
+    """
+    Returns a tuple of IDs all observed summoners.
+    """
+    cur = DBH.execute('select id from summoner where observed = 1')
+    return next(zip(*cur.fetchall()))

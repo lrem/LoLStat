@@ -1,5 +1,6 @@
 CREATE TABLE summoner (
     id INTEGER PRIMARY KEY,
+    observed INTEGER NOT NULL DEFAULT 0,
     name STRING
 );
 

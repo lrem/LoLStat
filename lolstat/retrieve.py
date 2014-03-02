@@ -62,8 +62,19 @@ def get_batch(region, summoners):
     return ret
 
 
+def set_key(key=None):
+    """
+    Set the API key to the given one.
+    If none is given, try to read one from `api.key` in current directory.
+    """
+    global KEY
+    if key is None:
+        open('api.key').readline().strip()
+    KEY = '?api_key=' + key
+
+
 if __name__ == '__main__':
-    KEY += open('api.key').readline().strip()
+    set_key()
     NAME = open('name').readline().strip()
     player = get_id('euw', NAME)
     batch = get_batch('euw', [player])
