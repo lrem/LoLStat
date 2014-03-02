@@ -69,7 +69,7 @@ def set_key(key=None):
     """
     global KEY
     if key is None:
-        open('api.key').readline().strip()
+        key = open('api.key').readline().strip()
     KEY = '?api_key=' + key
 
 

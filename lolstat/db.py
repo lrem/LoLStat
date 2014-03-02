@@ -95,6 +95,16 @@ def _store_game(game):
                      ])
 
 
+@transaction
+def add_summoner(name, summonerId, observed=1):
+    """
+    Add a summoner identified by `name` and `summonerId`
+    to the summoner table. By default sets `observed = 1`.
+    """
+    DBH.execute('insert into summoner(id, name, observed) values(?,?,?)',
+                [summonerId, name, observed])
+
+
 def game_in_db(gameId):
     """
     Determine whether the game is already in the database
