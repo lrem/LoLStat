@@ -4,6 +4,14 @@ CREATE TABLE summoner (
     name STRING
 );
 
+CREATE TABLE rank (
+    playerOrTeamId INTEGER NOT NULL,
+    time INTEGER NOT NULL,
+    tier INTEGER NOT NULL, -- This has to be converted from/to text
+    division INTEGER NOT NULL, -- Convert from roman numeral 'rank'
+    leaguePoints INTEGER NOT NULL
+);
+
 CREATE TABLE game (
     gameId INTEGER PRIMARY KEY,
     mapId INTEGER,

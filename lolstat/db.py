@@ -7,6 +7,7 @@ This module performs all database operations.
 """
 
 import sqlite3
+import time
 from functools import wraps
 
 DB_PATH = 'lolstat.db'
@@ -105,6 +106,24 @@ def add_summoner(name, summonerId, observed=1):
                 [summonerId, name, observed])
 
 
+@transaction
+def store_ranks(ranks):
+    """
+    Put into the database a collection of rank hashes.
+    The hashes may have extra ignored items.
+    The time stamp will be taken as the time of call of this function.
+    """
+    start = int(time.time())
+    for rank in ranks:
+        DBH.execute('insert into rank values (?, ?, ?, ?, ?)',
+                    [rank['playerOrTeamId'],
+                     start,
+                     rank['tier'],
+                     rank['division'],
+                     rank['leaguePoints'],
+                     ])
+
+
 def game_in_db(gameId):
     """
     Determine whether the game is already in the database
@@ -119,3 +138,23 @@ def get_observed_summoners():
     """
     cur = DBH.execute('select id from summoner where observed = 1')
     return next(zip(*cur.fetchall()))
+
+
+'''
+This code is not used because of a conceptual problem:
+what about the unranked players?
+
+def get_stale_ranks(threshold=24 * 60 * 60):
+    """
+    Find the list of summoners whose ranks are older than a threshold.
+    """
+    threshold = int(time.time()) - threshold
+    cur = DBH.execute('select playerOrTeamId from rank '
+                      'where time < ? group by playerOrTeamId',
+                      [threshold])
+    res = cur.fetchall()
+    if len(res) == 0:
+        return []
+    else:
+        return next(zip(*res))
+'''
