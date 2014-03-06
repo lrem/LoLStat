@@ -19,7 +19,6 @@ VERBOSE = True
 
 def main():
     lolstat.retrieve.set_key()
-    last_ranks = 0
     while True:
         if VERBOSE:
             print("Activating")
@@ -36,9 +35,13 @@ def main():
         lolstat.db.store_ranks(ranks)
         lolstat.db.update_last_ranks(ids)
         end = time.time()
-        last_ranks = start
         if VERBOSE:
             print("Ranks in %f seconds" % (end - mid, ))
+        mid = time.time()
+        lolstat.retrieve.fill_missing_summoners(REGION)
+        end = time.time()
+        if VERBOSE:
+            print("Missing summoners in %f seconds" % (end - mid, ))
         time.sleep(INTERVAL - (end - start))
 
 if __name__ == '__main__':

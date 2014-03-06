@@ -108,14 +108,31 @@ def _get_ranks_single(region, summoner):
     return res.json()
 
 
+# This one is actually overstepping the limits of this module
+# But I don't see any possible gain from duty separation in this case
 def fill_missing_summoners(region):
     """
     Retrieve information of missing summoners:
         - summoner names
         - leagues
+    Processes only 40 first summoners, as per API limits.
     """
-    ids = lolstat.db.get_missing_summoners()
-    raise NotImplementedError
+    ids = lolstat.db.get_missing_summoners()[:40]
+    names = _get_names(region, ids)
+    lolstat.db.add_summmoners(names)
+    ranks = get_ranks(region, ids)
+    lolstat.db.store_ranks(ranks)
+    lolstat.db.update_last_ranks(ids)
+
+
+def _get_names(region, ids):
+    """
+    Gets summoner names for the given `ids`, returning them in a hash.
+    """
+    json = requests.get(NAME % {'region': region,
+                                'summonerIds': ','.join(map(str, ids))}
+                        + KEY).json()
+    return json
 
 
 def set_key(key=None):

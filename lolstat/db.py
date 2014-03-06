@@ -107,6 +107,18 @@ def add_summoner(name, summonerId, observed=1):
 
 
 @transaction
+def add_summmoners(names, observed=0):
+    """
+    Add a batch of summoners, given by a `names` hash,
+    where keys are the ids and values corresponding names.
+    By default sets `observed = 0`.
+    """
+    for sid in names:
+        DBH.execute('insert into summoner(id, name, observed) values(?,?,?)',
+                    [sid, names[sid], observed])
+
+
+@transaction
 def store_ranks(ranks):
     """
     Put into the database a collection of rank hashes.
