@@ -3,6 +3,7 @@ CREATE TABLE summoner (
     observed INTEGER NOT NULL DEFAULT 0,
     name STRING
 );
+ALTER TABLE summoner ADD COLUMN last_rank INTEGER NOT NULL DEFAULT 0;
 
 CREATE TABLE rank (
     playerOrTeamId INTEGER NOT NULL,

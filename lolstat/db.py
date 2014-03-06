@@ -140,21 +140,36 @@ def get_observed_summoners():
     return next(zip(*cur.fetchall()))
 
 
-'''
-This code is not used because of a conceptual problem:
-what about the unranked players?
+def get_missing_summoners():
+    """
+    Returns a tuple of IDs all summoners
+    who exist in `stat` but not in `summoner` table.
+    """
+    cur = DBH.execute('select distinct summonerId from stats '
+                      'where summonerId not in (select id from summoner)')
+    return next(zip(*cur.fetchall()))
+
+
+@transaction
+def update_last_ranks(ids):
+    """
+    Marks for summoners given by `ids` that their ranks were checked now.
+    """
+    assert all([isinstance(x, int) for x in ids])
+    DBH.execute('update summoner set last_rank = %d where id in (%s)'
+                % (time.time(), ','.join(map(str, ids))))
+
 
 def get_stale_ranks(threshold=24 * 60 * 60):
     """
-    Find the list of summoners whose ranks are older than a threshold.
+    Find the list of observed summoners whose ranks are older than a threshold.
     """
     threshold = int(time.time()) - threshold
-    cur = DBH.execute('select playerOrTeamId from rank '
-                      'where time < ? group by playerOrTeamId',
+    cur = DBH.execute('select id from summoner '
+                      'where observed > 0 and last_rank < ?',
                       [threshold])
     res = cur.fetchall()
     if len(res) == 0:
         return []
     else:
         return next(zip(*res))
-'''

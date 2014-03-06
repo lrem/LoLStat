@@ -108,6 +108,16 @@ def _get_ranks_single(region, summoner):
     return res.json()
 
 
+def fill_missing_summoners(region):
+    """
+    Retrieve information of missing summoners:
+        - summoner names
+        - leagues
+    """
+    ids = lolstat.db.get_missing_summoners()
+    raise NotImplementedError
+
+
 def set_key(key=None):
     """
     Set the API key to the given one.

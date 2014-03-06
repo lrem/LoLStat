@@ -14,7 +14,6 @@ import lolstat.db
 
 REGION = 'euw'  # No transatlantic, no EU 2, for now
 INTERVAL = 10*60  # No need to check more often than a short game time
-RANKS_INTERVAL = 24 * 60*60
 VERBOSE = True
 
 
@@ -29,14 +28,15 @@ def main():
         end = time.time()
         if VERBOSE:
             print("Batch in %f seconds" % (end - start, ))
-        if end > last_ranks + RANKS_INTERVAL:
-            mid = time.time()
-            ranks = lolstat.retrieve.get_ranks(REGION, ids)
-            lolstat.db.store_ranks(ranks)
-            end = time.time()
-            last_ranks = start
-            if VERBOSE:
-                print("Ranks in %f seconds" % (end - mid, ))
+        mid = time.time()
+        ids = lolstat.db.get_stale_ranks()
+        ranks = lolstat.retrieve.get_ranks(REGION, ids)
+        lolstat.db.store_ranks(ranks)
+        lolstat.db.update_last_ranks(ids)
+        end = time.time()
+        last_ranks = start
+        if VERBOSE:
+            print("Ranks in %f seconds" % (end - mid, ))
         time.sleep(INTERVAL - (end - start))
 
 if __name__ == '__main__':
