@@ -13,7 +13,7 @@ import lolstat.retrieve
 import lolstat.db
 
 REGION = 'euw'  # No transatlantic, no EU 2, for now
-INTERVAL = 10*60  # No need to check more often than a short game time
+INTERVAL = 10*60*60  # No need to check more often than a short game time
 VERBOSE = True
 
 
@@ -21,6 +21,8 @@ def main():
     lolstat.retrieve.set_key()
     last_ranks = 0
     while True:
+        if VERBOSE:
+            print("Activating")
         start = time.time()
         ids = lolstat.db.get_observed_summoners()
         batch = lolstat.retrieve.get_batch(REGION, ids)
