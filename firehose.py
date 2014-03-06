@@ -13,7 +13,7 @@ import lolstat.retrieve
 import lolstat.db
 
 REGION = 'euw'  # No transatlantic, no EU 2, for now
-INTERVAL = 10*60*60  # No need to check more often than a short game time
+INTERVAL = 10*60  # No need to check more often than a short game time
 VERBOSE = True
 
 
