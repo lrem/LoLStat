@@ -10,13 +10,11 @@ import argparse
 import lolstat.retrieve
 import lolstat.db
 
-REGION = 'euw'  # No transatlantic, no EU 2, for now
-
 parser = argparse.ArgumentParser()
 parser.add_argument('name', type=str)
 args = parser.parse_args()
 
 lolstat.retrieve.set_key()
 
-sid = lolstat.retrieve.get_id(REGION, args.name)
+sid = lolstat.retrieve.get_id(args.name)
 lolstat.db.add_summoner(args.name, sid)
