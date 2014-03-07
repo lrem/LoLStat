@@ -159,7 +159,11 @@ def get_missing_summoners():
     """
     cur = DBH.execute('select distinct summonerId from stats '
                       'where summonerId not in (select id from summoner)')
-    return next(zip(*cur.fetchall()))
+    res = cur.fetchall()
+    if len(res) == 0:
+        return []
+    else:
+        return next(zip(*res))
 
 
 @transaction
