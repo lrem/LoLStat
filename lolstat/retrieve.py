@@ -118,6 +118,8 @@ def fill_missing_summoners(region):
     Processes only 40 first summoners, as per API limits.
     """
     ids = lolstat.db.get_missing_summoners()[:40]
+    if len(ids) == 0:
+        return
     names = _get_names(region, ids)
     lolstat.db.add_summmoners(names)
     ranks = get_ranks(region, ids)
