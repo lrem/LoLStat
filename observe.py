@@ -17,4 +17,4 @@ args = parser.parse_args()
 lolstat.retrieve.set_key()
 
 sid = lolstat.retrieve.get_id(args.name)
-lolstat.db.add_summoner(args.name, sid)
+lolstat.db.observe_summoner(args.name, sid)

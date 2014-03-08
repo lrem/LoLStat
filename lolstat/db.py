@@ -97,13 +97,17 @@ def _store_game(game):
 
 
 @transaction
-def add_summoner(name, summonerId, observed=1):
+def observe_summoner(name, summonerId):
     """
     Add a summoner identified by `name` and `summonerId`
-    to the summoner table. By default sets `observed = 1`.
+    to the summoner table, or only set `observed = 1` if exists.
     """
-    DBH.execute('insert into summoner(id, name, observed) values(?,?,?)',
-                [summonerId, name, observed])
+    try:
+        DBH.execute('insert into summoner(id, name, observed) values(?,?,1)',
+                    [summonerId, name])
+    except sqlite3.IntegrityError:
+        DBH.execute('update summoner set observed = 1 where id = ?',
+                    [summonerId])
 
 
 @transaction
