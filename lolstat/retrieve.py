@@ -55,6 +55,8 @@ def get_batch(summoners):
     for summoner in summoners:
         for game in ret[summoner]['games']:
             if not lolstat.db.game_in_db(game['gameId']):
+                if 'fellowPlayers' not in game:  # This CAN happen
+                    continue
                 for fellow in game['fellowPlayers']:
                     fellowID = fellow['summonerId']
                     if fellowID not in ret:
