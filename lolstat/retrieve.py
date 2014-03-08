@@ -40,7 +40,7 @@ def get_recent(summoner):
     """
     time.sleep(REQUEST_SLEEP)
     res = requests.get(RECENT % {'summonerId': summoner} + KEY)
-    if res.status_code == 401:
+    if res.status_code in (401, 503):
         time.sleep(UNAUTH_SLEEP)
         return get_recent(summoner)
     return res.json()
@@ -100,7 +100,7 @@ def _get_ranks_single(summoner):
     """
     time.sleep(REQUEST_SLEEP)
     res = requests.get(LEAGUE_ENTRY % {'summonerId': summoner} + KEY)
-    if res.status_code == 401:
+    if res.status_code in (401, 503):
         time.sleep(UNAUTH_SLEEP)
         return get_recent(summoner)
     if res.status_code == 404:  # A normals-only player
