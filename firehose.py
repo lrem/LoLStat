@@ -44,7 +44,7 @@ def main():
         end = time.time()
         if VERBOSE:
             print("Missing summoners in %f seconds" % (end - mid, ))
-        time.sleep(INTERVAL - (end - start))
+        time.sleep(max(0, INTERVAL - (end - start)))
 
 if __name__ == '__main__':
     main()
